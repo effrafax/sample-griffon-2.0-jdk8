@@ -1,0 +1,89 @@
+// apply plugin: 'idea'
+apply plugin: 'groovy' 
+apply plugin: 'application' 
+apply from: file('gradle/javafx-plugin.gradle')
+
+wrapper {
+    gradleVersion="1.11"
+}
+ 
+mainClassName = 'sample.javafx.groovy.Launcher'
+
+version = '0.1.0'
+group = 'org.mst.griffon.samples'
+ext.griffonVersion = '2.0.0-SNAPSHOT'
+ 
+configurations {
+    compileOnly
+}
+ 
+repositories {
+    jcenter()
+    maven { url 'http://dl.bintray.com/content/aalmiray/griffon' }
+    maven { url 'http://dl.bintray.com/content/aalmiray/kordamp' }
+    mavenCentral()
+    mavenLocal()
+}
+ 
+dependencies {
+    compileOnly "org.codehaus.griffon:griffon-groovy-compile:$griffonVersion" 
+     
+    compile "org.codehaus.griffon:griffon-groovy:$griffonVersion" 
+    compile "org.codehaus.griffon:griffon-javafx:$griffonVersion" 
+     
+    compile "org.codehaus.griffon:griffon-javafx-builder:$griffonVersion" 
+    compile "org.codehaus.griffon:griffon-guice:$griffonVersion" 
+    compile 'org.codehaus.groovyfx:groovyfx:0.4.0-SNAPSHOT'
+    
+     
+    runtime('log4j:log4j:1.2.17') { 
+        exclude group: 'ant', module: 'ant-nodeps'
+        exclude group: 'ant', module: 'ant-junit'
+        exclude group: 'ant-contrib', module: 'ant-contrib'
+    }
+    compile 'org.slf4j:slf4j-log4j12:1.7.5' 
+    testCompile "org.codehaus.griffon:griffon-core-test:$griffonVersion"
+}
+ 
+sourceSets {
+    main {
+        compileClasspath += configurations.compileOnly
+        groovy { //<5>
+            srcDirs = [
+                'griffon-app/conf',
+                'griffon-app/controllers',
+                'griffon-app/models',
+                'griffon-app/views',
+                'griffon-app/services',
+                'griffon-app/lifecycle',
+                'src/main/groovy'
+            ]
+        }
+        resources { //<5>
+            srcDirs = [
+                'griffon-app/resources',
+                'griffon-app/i18n',
+                'src/main/resources'
+            ]
+        }
+    }
+}
+ 
+javadoc {
+    classpath += configurations.compileOnly
+}
+ 
+// idea {
+//     module {
+//         scopes.PROVIDED.plus += configurations.compileOnly
+//     }
+// }
+
+javafx {
+    mainClass = mainClassName
+}
+ 
+gradle.taskGraph.whenReady {
+    sourceSets.main.groovy.srcDirs.each { it.mkdirs() }
+    sourceSets.main.resources.srcDirs.each { it.mkdirs() }
+}
