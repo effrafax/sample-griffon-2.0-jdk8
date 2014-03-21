@@ -1,0 +1,4 @@
+= Sample Application for Griffon 2.0 with JavaFX and JDK8
+
+A sample JavaFX application that uses Griffon 2.0
+
